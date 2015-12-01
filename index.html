@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Memphis Crime Mapper</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-    scalable=no">
+<meta charset="utf-8">
+<style>
+  html, body,    
+  #map_canvas {
+    width: 900px;
+    height: 540px;
+      margin: 0 auto;
+      margin-top: 10px;
+    
+  }
+
+
+    body {background-color: black; color: lightcoral; text-align: center; font-family: Helvetica;}
+
+  #legend {
+    font-family: Helvetica;
+      font-weight: 900;color: lightgreen;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 5px;
+      padding-bottom: 8px;
+    margin: 5px;
+    border: 1px solid darkmagenta; text-align: left;      }
+
+  #legend img {
+    vertical-align: middle;
+      padding:1px;
+  }
+</style>
+<script src="https://maps.googleapis.com/maps/api/js"></script>
+<script>
+  var map;
+  var markers = [];  // we well store the markers here, 
+  function initialize() {
+    map = new google.maps.Map(document.getElementById('map_canvas'), {
+      zoom: 12,
+      center: new google.maps.LatLng(35.1557011,-89.9919586),
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      styles: [
+        {
+        stylers: [
+        { hue: '#EE6A50' },
+        { invert_lightness: false },
+        { saturation:4  },
+        { lightness: 10 },
+        { gamma: 1.2 }
+        ]
+        },
+            {
+          featureType: 'poi.business',
+          elementType: ' labels.icon',
+          stylers: [
+            { visibility: 'on' },
+            { hue: '#ec83f9' },
+            { lightness: 40 },
+            { saturation: 10 }
+          ]
+        }, 
+            {
+          featureType: 'water',
+    elementType: 'geometry',
+    stylers: [
+        { color: '#07c7d6' },
+        { lightness: 15 }
+          ]
+        }, {
+          featureType: 'transit.station.rail',
+          elementType: 'labels.text.stroke',
+          stylers: [
+          { visibility: 'on' },
+          { color: '#FF6666' }
+          ]      
+        }, {
+          featureType: 'poi',
+          elementType: 'geometry',
+          stylers: [
+            { visibility: 'on' },
+            { lightness: -35 }
+          ]
+        }, 
+          {
+          featureType: 'road.local',
+          elementType: 'geometry.fill',
+          stylers: [
+            { visibility: 'on' },
+            { hue: '#FFD900' },
+            { lightness: 30 },
+            { saturation: 99 }
+          ]
+        }
+      ]
+    });
+
+    var iconBase = 'https://i.imgur.com/';
+    var icons = {
+  armedRobbery: {
+        name: 'Armed Robbery',
+        icon: iconBase + 'Ogm5rU5.png'
+      },
+  murder: {
+        name: 'Murder',
+        icon: iconBase + 'qiHmH5C.png'
+      },
+  sexualAssault: {
+        name: 'Sexual Assault',
+        icon: iconBase + '3KMKXvR.png'
+        },
+    burglary: {
+        name: 'Burglary',
+        icon: iconBase + 'uvDeawk.png'
+        },
+    arson: {
+        name: 'Arson',
+        icon: iconBase + '4TN9svw.png'
+        },
+         grandTheft: {
+        name: 'Grand Theft Auto',
+        icon: iconBase + 'jZbqYtS.png'
+        }
+    };
+var myLatlng1 = new google.maps.LatLng(35.1557011,-89.9919586);
+var image1 = 'infopin.png';
+      var contentString1 = '<div id="content">'+
+      '<div id="siteNotice">'+
+      '</div>'+
+      '<h1 id="firstHeading" class="firstHeading">Memphis Police Statement</h1>'+
+      '<div id="bodyContent">'+
+      '<img src="police.png" style="max-width: 220px; float: left;">'+
+      '<p>The Memphis Police Department is committed to keeping you safe in the Mid-South Region. We publish crime reports as a vital part of our mission to remain transparent and increase safety efforts in the Memphis area. For more detailed information on any of these incidents, please call our non-emergency line at (901) 545-2677. Thanks, and stay safe!</p>'+
+      '</div>'+
+      '</div>';       var infowindow1 = new google.maps.InfoWindow({
+      content: contentString1
+  });
+
+
+
+            var marker1 = new google.maps.Marker({
+    position: myLatlng1,
+    map: map,
+    title:"Info",
+    animation: google.maps.Animation.DROP,
+    icon: image1
+        });
+
+
+
+          google.maps.event.addListener(marker1, 'click', function() {
+    infowindow1.open(map,marker1);
+  });
+      
+    function addMarker(feature) {
+      var marker = new google.maps.Marker({
+        position: feature.position,
+        icon: icons[feature.type].icon,
+        map: map
+      });
+      markers.push({
+        marker: marker,
+        type: feature.type
+      });
+    }
+
+    var features = [
+      {
+        position: new google.maps.LatLng(35.126178, -89.995886),
+        type: 'armedRobbery'        
+      }, {
+        position: new google.maps.LatLng(35.145647, -90.002161),
+        type: 'murder'
+      }, {
+       position: new google.maps.LatLng(35.147463, -90.055432),
+        type: 'sexualAssault'
+        }, {
+          position: new google.maps.LatLng(35.158911, -90.025371),  
+        type: 'burglary'
+        },    {
+        position: new google.maps.LatLng(35.144447, -89.942859),
+        type: 'arson'        
+      },
+        {
+        position: new google.maps.LatLng(35.087434, -89.979294),
+        type: 'grandTheft'        
+      }
+     
+    ];
+
+    for (var i = 0, feature; feature = features[i]; i++) {
+      addMarker(feature);
+    }
+
+    var legend = document.getElementById('legend');
+    var i=0;
+    for (var key in icons) {
+      var type = icons[key];
+      var name = type.name;
+      var icon = type.icon;
+      var div = document.createElement('div');
+      div.innerHTML = '<input checked="checked" type="checkbox" onchange="toggleType(this, event, \'' + features[i].type + '\')"><img src="' + icon + '"> ' + name;
+      legend.appendChild(div);
+      i++;
+    }
+    map.controls[google.maps.ControlPosition.LEFT_CENTER].push(legend);
+  }
+
+  function toggleType(elm, event, type) {
+    var on = elm.checked ;
+    for(var i=0; i<markers.length; i++) {
+      if (markers[i].type == type) {
+        markers[i].marker.setMap( on ? map : null);
+      }
+    }
+  } 
+
+
+  google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+</head>
+<body>
+    <header><h1>Memphis Reported Crime Incidents</h1><h2>November 28th, 2015</h2></header>
+<div id="legend"></div>
+    <div id="map_canvas"></div>
+
+</body>
+</html>
